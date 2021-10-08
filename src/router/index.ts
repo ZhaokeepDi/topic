@@ -6,20 +6,29 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: Home,
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  },
+    redirect: '/topic/three',
+    children: [
+      {
+        path: 'topic',
+        name: 'topic',
+        component: () => import('../views/TopicView.vue'),
+        children: [{
+          path: 'three',
+          name: 'three',
+          component: () => import('../views/topic/three/Three.vue'),
+          meta: { title: '不重复的最长字串' }
+        }]
+      }
+    ]
+  }
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 });
-
+router.beforeEach((to, from, next) => {
+  document.title = to.meta?.title as string || '个人项目';
+  next();
+});
 export default router;
